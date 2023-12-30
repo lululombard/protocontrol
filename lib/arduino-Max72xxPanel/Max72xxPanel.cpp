@@ -19,22 +19,23 @@
 #include <SPI.h>
 
 // The opcodes for the MAX7221 and MAX7219
-#define OP_NOOP         0
-#define OP_DIGIT0       1
-#define OP_DIGIT1       2
-#define OP_DIGIT2       3
-#define OP_DIGIT3       4
-#define OP_DIGIT4       5
-#define OP_DIGIT5       6
-#define OP_DIGIT6       7
-#define OP_DIGIT7       8
-#define OP_DECODEMODE   9
-#define OP_INTENSITY   10
-#define OP_SCANLIMIT   11
-#define OP_SHUTDOWN    12
+#define OP_NOOP 0
+#define OP_DIGIT0 1
+#define OP_DIGIT1 2
+#define OP_DIGIT2 3
+#define OP_DIGIT3 4
+#define OP_DIGIT4 5
+#define OP_DIGIT5 6
+#define OP_DIGIT6 7
+#define OP_DIGIT7 8
+#define OP_DECODEMODE 9
+#define OP_INTENSITY 10
+#define OP_SCANLIMIT 11
+#define OP_SHUTDOWN 12
 #define OP_DISPLAYTEST 15
 
-Max72xxPanel::Max72xxPanel(byte csPin, byte hDisplays, byte vDisplays) : Adafruit_GFX(hDisplays << 3, vDisplays << 3) {
+Max72xxPanel::Max72xxPanel(byte csPin, byte hDisplays, byte vDisplays) : Adafruit_GFX(hDisplays << 3, vDisplays << 3)
+{
 
 	Max72xxPanel::SPI_CS = csPin;
 
@@ -42,13 +43,14 @@ Max72xxPanel::Max72xxPanel(byte csPin, byte hDisplays, byte vDisplays) : Adafrui
 	Max72xxPanel::hDisplays = hDisplays;
 	Max72xxPanel::bitmapSize = displays << 3;
 
-	Max72xxPanel::bitmap = (byte*)malloc(bitmapSize);
-	Max72xxPanel::matrixRotation = (byte*)malloc(displays);
-	Max72xxPanel::matrixPosition = (byte*)malloc(displays);
+	Max72xxPanel::bitmap = (byte *)malloc(bitmapSize);
+	Max72xxPanel::matrixRotation = (byte *)malloc(displays);
+	Max72xxPanel::matrixPosition = (byte *)malloc(displays);
 
-	for ( byte display = 0; display < displays; display++ ) {
-	matrixPosition[display] = display;
-	matrixRotation[display] = 0;
+	for (byte display = 0; display < displays; display++)
+	{
+		matrixPosition[display] = display;
+		matrixRotation[display] = 0;
 	}
 
 	spi = &SPI;
@@ -57,12 +59,12 @@ Max72xxPanel::Max72xxPanel(byte csPin, byte hDisplays, byte vDisplays) : Adafrui
 	initDisplay();
 }
 
-Max72xxPanel::Max72xxPanel (
+Max72xxPanel::Max72xxPanel(
 	byte sck, byte miso,
-	byte mosi, byte csPin, 
-	SPIClass* _spi,
-	byte hDisplays=1, byte vDisplays=1) : Adafruit_GFX(hDisplays << 3, vDisplays << 3) {
-
+	byte mosi, byte csPin,
+	SPIClass *_spi,
+	byte hDisplays = 1, byte vDisplays = 1) : Adafruit_GFX(hDisplays << 3, vDisplays << 3)
+{
 
 	Max72xxPanel::SPI_CS = csPin;
 
@@ -70,13 +72,14 @@ Max72xxPanel::Max72xxPanel (
 	Max72xxPanel::hDisplays = hDisplays;
 	Max72xxPanel::bitmapSize = displays << 3;
 
-	Max72xxPanel::bitmap = (byte*)malloc(bitmapSize);
-	Max72xxPanel::matrixRotation = (byte*)malloc(displays);
-	Max72xxPanel::matrixPosition = (byte*)malloc(displays);
+	Max72xxPanel::bitmap = (byte *)malloc(bitmapSize);
+	Max72xxPanel::matrixRotation = (byte *)malloc(displays);
+	Max72xxPanel::matrixPosition = (byte *)malloc(displays);
 
-	for ( byte display = 0; display < displays; display++ ) {
-	matrixPosition[display] = display;
-	matrixRotation[display] = 0;
+	for (byte display = 0; display < displays; display++)
+	{
+		matrixPosition[display] = display;
+		matrixRotation[display] = 0;
 	}
 
 	spi = _spi;
@@ -85,11 +88,12 @@ Max72xxPanel::Max72xxPanel (
 	initDisplay();
 }
 
-void Max72xxPanel::initDisplay() {
-	//SPI.setBitOrder(MSBFIRST);
+void Max72xxPanel::initDisplay()
+{
+	// SPI.setBitOrder(MSBFIRST);
 
 	spi->setDataMode(SPI_MODE0);
-	//spi->setClockDivider(SPI_CLOCK_DIV128);
+	// spi->setClockDivider(SPI_CLOCK_DIV128);
 	pinMode(SPI_CS, OUTPUT);
 
 	// Clear the screen
@@ -108,34 +112,41 @@ void Max72xxPanel::initDisplay() {
 	shutdown(false);
 
 	// Set the brightness to a medium value
-	setIntensity(7);
+	setIntensity(15);
 }
 
-void Max72xxPanel::setPosition(byte display, byte x, byte y) {
+void Max72xxPanel::setPosition(byte display, byte x, byte y)
+{
 	matrixPosition[x + hDisplays * y] = display;
 }
 
-void Max72xxPanel::setRotation(byte display, byte rotation) {
+void Max72xxPanel::setRotation(byte display, byte rotation)
+{
 	matrixRotation[display] = rotation;
 }
 
-void Max72xxPanel::setRotation(uint8_t rotation) {
+void Max72xxPanel::setRotation(uint8_t rotation)
+{
 	Adafruit_GFX::setRotation(rotation);
 }
 
-void Max72xxPanel::shutdown(boolean b) {
-  spiTransfer(OP_SHUTDOWN, b ? 0 : 1);
+void Max72xxPanel::shutdown(boolean b)
+{
+	spiTransfer(OP_SHUTDOWN, b ? 0 : 1);
 }
 
-void Max72xxPanel::setIntensity(byte intensity) {
-  spiTransfer(OP_INTENSITY, intensity);
+void Max72xxPanel::setIntensity(byte intensity)
+{
+	spiTransfer(OP_INTENSITY, intensity);
 }
 
-void Max72xxPanel::fillScreen(uint16_t color) {
-  memset(bitmap, color ? 0xff : 0, bitmapSize);
+void Max72xxPanel::fillScreen(uint16_t color)
+{
+	memset(bitmap, color ? 0xff : 0, bitmapSize);
 }
 
-void Max72xxPanel::drawPixel(int16_t xx, int16_t yy, uint16_t color) {
+void Max72xxPanel::drawPixel(int16_t xx, int16_t yy, uint16_t color)
+{
 	// Operating in bytes is faster and takes less code to run. We don't
 	// need values above 200, so switch from 16 bit ints to 8 bit unsigned
 	// ints (bytes).
@@ -144,22 +155,29 @@ void Max72xxPanel::drawPixel(int16_t xx, int16_t yy, uint16_t color) {
 	byte y = yy;
 	byte tmp;
 
-	if ( rotation ) {
+	if (rotation)
+	{
 		// Implement Adafruit's rotation.
-		if ( rotation >= 2 ) {										// rotation == 2 || rotation == 3
+		if (rotation >= 2)
+		{ // rotation == 2 || rotation == 3
 			x = _width - 1 - x;
 		}
 
-		if ( rotation == 1 || rotation == 2 ) {		// rotation == 1 || rotation == 2
+		if (rotation == 1 || rotation == 2)
+		{ // rotation == 1 || rotation == 2
 			y = _height - 1 - y;
 		}
 
-		if ( rotation & 1 ) {     								// rotation == 1 || rotation == 3
-			tmp = x; x = y; y = tmp;
+		if (rotation & 1)
+		{ // rotation == 1 || rotation == 3
+			tmp = x;
+			x = y;
+			y = tmp;
 		}
 	}
 
-	if ( x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT ) {
+	if (x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT)
+	{
 		// Ignore pixels outside the canvas.
 		return;
 	}
@@ -172,42 +190,52 @@ void Max72xxPanel::drawPixel(int16_t xx, int16_t yy, uint16_t color) {
 	y &= 0b111;
 
 	byte r = matrixRotation[display];
-	if ( r >= 2 ) {										   // 180 or 270 degrees
+	if (r >= 2)
+	{ // 180 or 270 degrees
 		x = 7 - x;
 	}
-	if ( r == 1 || r == 2 ) {				     // 90 or 180 degrees
+	if (r == 1 || r == 2)
+	{ // 90 or 180 degrees
 		y = 7 - y;
 	}
-	if ( r & 1 ) {     								   // 90 or 270 degrees
-		tmp = x; x = y; y = tmp;
+	if (r & 1)
+	{ // 90 or 270 degrees
+		tmp = x;
+		x = y;
+		y = tmp;
 	}
 
 	byte d = display / hDisplays;
 	x += (display - d * hDisplays) << 3; // x += (display % hDisplays) * 8
-	y += d << 3;												 // y += (display / hDisplays) * 8
+	y += d << 3;						 // y += (display / hDisplays) * 8
 
 	// Update the color bit in our bitmap buffer.
 
 	byte *ptr = bitmap + x + WIDTH * (y >> 3);
 	byte val = 1 << (y & 0b111);
 
-	if ( color ) {
+	if (color)
+	{
 		*ptr |= val;
 	}
-	else {
+	else
+	{
 		*ptr &= ~val;
 	}
 }
 
-void Max72xxPanel::write() {
+void Max72xxPanel::write()
+{
 	// Send the bitmap buffer to the displays.
 
-	for ( byte row = OP_DIGIT7; row >= OP_DIGIT0; row-- ) {
+	for (byte row = OP_DIGIT7; row >= OP_DIGIT0; row--)
+	{
 		spiTransfer(row);
 	}
 }
 
-void Max72xxPanel::spiTransfer(byte opcode, byte data) {
+void Max72xxPanel::spiTransfer(byte opcode, byte data)
+{
 	// If opcode > OP_DIGIT7, send the opcode and data to all displays.
 	// If opcode <= OP_DIGIT7, display the column with data in our buffer for all displays.
 	// We do not support (nor need) to use the OP_NOOP opcode.
@@ -219,12 +247,12 @@ void Max72xxPanel::spiTransfer(byte opcode, byte data) {
 	// the second byte the data.
 	byte end = opcode - OP_DIGIT0;
 	byte start = bitmapSize + end;
-	do {
+	do
+	{
 		start -= 8;
 		spi->transfer(opcode);
 		spi->transfer(opcode <= OP_DIGIT7 ? bitmap[start] : data);
-	}
-	while ( start > end );
+	} while (start > end);
 
 	// Latch the data onto the display(s)
 	digitalWrite(SPI_CS, HIGH);

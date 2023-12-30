@@ -25,7 +25,6 @@
 #include "displays/fastled/fastledstring.h"
 #include "displays/fastled/fastledmatrix.h"
 
-
 #include "crgbcanvas.h"
 
 #include "remotereceiver.h"
@@ -43,31 +42,20 @@ TaskHandle_t UpdateTask;
 
 #ifdef USE_WS2812Matrix
 // Define the layout of our physical display
-FastLEDDisplay display {
+FastLEDDisplay display{
     new FastLEDString{
         new WS2812<16, RGB>, {
-            new FastLEDMatrix{16, 8, 0, 0, 0},
-            new FastLEDMatrix{32, 8, 0, 16, 0},
-            new FastLEDMatrix{8, 8, 32, 8, 0},
-        }},
-    new FastLEDString{
-        new WS2812<17, RGB>, {
-            new FastLEDMatrix{16, 8, 64, 0, 2},
-            new FastLEDMatrix{32, 8, 48, 16, 2},
-            new FastLEDMatrix{8, 8, 40, 8, 2},
-        }},
-    new FastLEDString{
-        new WS2812B<21,RGB>, {
-            new FastLEDMatrix{8, 8, 24, 8, 0}
-        }
-    },
-    new FastLEDString{
-        new WS2812B<22,RGB>, {
-            new FastLEDMatrix{8, 8, 56, 8, 0}
-        }
-    }
-};
-#endif //USE_WS2812Matrix
+                                 new FastLEDMatrix{16, 8, 0, 0, 0},
+                                 new FastLEDMatrix{32, 8, 0, 16, 0},
+                                 new FastLEDMatrix{8, 8, 32, 8, 0},
+                             }},
+    new FastLEDString{new WS2812<17, RGB>, {
+                                               new FastLEDMatrix{16, 8, 64, 0, 2},
+                                               new FastLEDMatrix{32, 8, 48, 16, 2},
+                                               new FastLEDMatrix{8, 8, 40, 8, 2},
+                                           }},
+    new FastLEDString{new WS2812B<21, RGB>, {new FastLEDMatrix{8, 8, 24, 8, 0}}}, new FastLEDString{new WS2812B<22, RGB>, {new FastLEDMatrix{8, 8, 56, 8, 0}}}};
+#endif // USE_WS2812Matrix
 
 #ifdef USE_MAX7219
 #include "displays/max7219/max7219display.h"
@@ -94,37 +82,36 @@ Max7219display display{panel};
 // WS2812<22, GRB> sidePanelRight;
 // CRGB sidePanelFramebuffer[NUM_LEDS_SIDEPANEL];
 
-#endif //USE_MAX7219
-
+#endif // USE_MAX7219
 
 ProtoControl::BitmapManager<256> bitmapManager;
 
 BlinkController blinkController(false, 250, 8000, 2000);
 
 Scene scene{
-    new Rainbow<TargetFollowerElement> {"eye_r_follower", 16, 8, 0, 0, {
-        new Blink<MirrorHorizontal<BitmapElement>>{blinkController, "eye_r"},
-    }},
-    new Rainbow<TargetFollowerElement> {"mouth_r_follower", 32, 8, 16, 0, {
-        new MirrorHorizontal<BitmapElement>{"mouth_r"},
-    }},
-    new Rainbow<TargetFollowerElement> {"nose_r_follower", 8, 8, 48, 0, {
-        new MirrorHorizontal<BitmapElement>{"nose_r"},
-    }},
+    new Rainbow<TargetFollowerElement>{"eye_r_follower", 16, 8, 0, 0, {
+                                                                          new Blink<MirrorHorizontal<BitmapElement>>{blinkController, "eye_r"},
+                                                                      }},
+    new Rainbow<TargetFollowerElement>{"mouth_r_follower", 32, 8, 16, 0, {
+                                                                             new MirrorHorizontal<BitmapElement>{"mouth_r"},
+                                                                         }},
+    new Rainbow<TargetFollowerElement>{"nose_r_follower", 8, 8, 48, 0, {
+                                                                           new MirrorHorizontal<BitmapElement>{"nose_r"},
+                                                                       }},
 
-    new Rainbow<TargetFollowerElement> {"nose_l_follower", 8, 8, 56, 0, {
-        new BitmapElement{"nose_l"},
-    }},
-    new Rainbow<TargetFollowerElement> {"mouth_l_follower", 32, 8, 64, 0, {
-        new BitmapElement{"mouth_l"},
-    }},
-    new Rainbow<TargetFollowerElement> {"eye_l_follower", 16, 8, 96, 0, {
-        new Blink<BitmapElement>{blinkController, "eye_l"},
-    }},
+    new Rainbow<TargetFollowerElement>{"nose_l_follower", 8, 8, 56, 0, {
+                                                                           new BitmapElement{"nose_l"},
+                                                                       }},
+    new Rainbow<TargetFollowerElement>{"mouth_l_follower", 32, 8, 64, 0, {
+                                                                             new BitmapElement{"mouth_l"},
+                                                                         }},
+    new Rainbow<TargetFollowerElement>{"eye_l_follower", 16, 8, 96, 0, {
+                                                                           new Blink<BitmapElement>{blinkController, "eye_l"},
+                                                                       }},
 
     // new Rainbow<ColorOverride<BitmapElement>>{"ear_r", 24, 8},
     // new Rainbow<ColorOverride<BitmapElement>>{"ear_l", 56, 8}
-    
+
 };
 
 volatile bool flipped = false;
@@ -366,9 +353,10 @@ void setup()
     etl::delegate<void(int)> buttonHandlerDelegate(buttonHandler);
     RemoteReceiver::setButtonHandler(buttonHandlerDelegate);
 
-    #ifdef USE_MAX7219
+#ifdef USE_MAX7219
     // Face config
-    for (uint i = 0; i < NUMBER_OF_DEVICES; i++){
+    for (uint i = 0; i < NUMBER_OF_DEVICES; i++)
+    {
         display.getPanel().setRotation(i, 1);
     }
     display.getPanel().setRotation(13, 3);
@@ -377,13 +365,14 @@ void setup()
     display.getPanel().setPosition(13, 12, 0);
     display.getPanel().setPosition(12, 13, 0);
 
-    display.setBrightness(32);
+    display.setBrightness(64);
 
     // Write settings
     display.getPanel().write();
 
     // Startup blink
-    for (uint i = 0; i < 3; i++) {
+    for (uint i = 0; i < 3; i++)
+    {
         display.getPanel().fillScreen(1);
         display.getPanel().write();
         delay(100);
@@ -393,14 +382,15 @@ void setup()
     }
 
     // Startup scan
-    for (uint i = 0; i < NUMBER_OF_DEVICES * 8; i++) {
+    for (uint i = 0; i < NUMBER_OF_DEVICES * 8; i++)
+    {
         display.getPanel().fillScreen(0);
         display.getPanel().drawFastVLine(i, 0, 8, 1);
         display.getPanel().write();
         delay(10);
     }
 
-    #endif // USE_MAX7219
+#endif // USE_MAX7219
 
     //   FastLED.addLeds((CLEDController*)&sidePanelLeft, (CRGB*)&sidePanelFramebuffer, NUM_LEDS_SIDEPANEL);
     //   FastLED.addLeds((CLEDController*)&sidePanelRight, (CRGB*)&sidePanelFramebuffer, NUM_LEDS_SIDEPANEL);

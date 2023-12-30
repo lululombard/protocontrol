@@ -7,12 +7,14 @@
 #include "Max72xxPanel.h"
 
 static const uint32_t max_matrix_strings = 2;
+static const int full_clear_frames = 1000;
 
 class Max7219display : public IPixelReadWriteable
 {
 
 private:
     Max72xxPanel &panel;
+    int full_clear_counter = full_clear_frames - 10;
 
 public:
     /**
@@ -23,7 +25,7 @@ public:
     Max7219display(Max72xxPanel &panel) : panel{panel} {}
 
     void setPixel(uint16_t x, uint16_t y, CRGB color) override
-    {   
+    {
         panel.drawPixel(x, y, color ? 1 : 0);
     }
 
@@ -49,7 +51,15 @@ public:
 
     void clear() override
     {
-        this->panel.fillScreen(0);
+        if (full_clear_counter++ > full_clear_frames)
+        {
+            this->panel.initDisplay();
+            full_clear_counter = 0;
+        }
+        else
+        {
+            this->panel.fillScreen(0);
+        }
     }
 
     uint16_t getWidth() const override { return 0; }
