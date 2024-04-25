@@ -22,18 +22,18 @@
 #define Max72xxPanel_h
 
 #if (ARDUINO >= 100)
-  #include <Arduino.h>
+#include <Arduino.h>
 #else
-  #include <WProgram.h>
-  #include "pins_arduino.h"
+#include <WProgram.h>
+#include "pins_arduino.h"
 #endif
 
 #include <SPI.h>
 
-class Max72xxPanel : public Adafruit_GFX {
+class Max72xxPanel : public Adafruit_GFX
+{
 
 public:
-
   /*
    * Create a new controler
    * Parameters:
@@ -41,9 +41,9 @@ public:
    * hDisplays  number of displays horizontally
    * vDisplays  number of displays vertically
    */
-  Max72xxPanel(byte csPin, byte hDisplays=1, byte vDisplays=1);
+  Max72xxPanel(byte csPin, byte hDisplays = 1, byte vDisplays = 1);
 
-    /*
+  /*
    * Create a new controler
    * Parameters:
    * sck        spi clock
@@ -54,33 +54,33 @@ public:
    * vDisplays  number of displays vertically
    */
   Max72xxPanel(
-    byte sck, byte miso,
-    byte mosi, byte csPin, 
-    SPIClass* _spi,
-    byte hDisplays, byte vDisplays);
+      byte sck, byte miso,
+      byte mosi, byte csPin,
+      SPIClass *_spi,
+      byte hDisplays, byte vDisplays);
 
-	/*
-	 * Define how the displays are ordered. The first display (0)
-	 * is the one closest to the Arduino.
-	 */
-	void setPosition(byte display, byte x, byte y);
+  /*
+   * Define how the displays are ordered. The first display (0)
+   * is the one closest to the Arduino.
+   */
+  void setPosition(byte display, byte x, byte y);
 
-	/*
-	 * Define if and how the displays are rotated. The first display
-	 * (0) is the one closest to the Arduino. rotation can be:
-	 *   0: no rotation
-	 *   1: 90 degrees clockwise
-	 *   2: 180 degrees
-	 *   3: 90 degrees counter clockwise
-	 */
-	void setRotation(byte display, byte rotation);
+  /*
+   * Define if and how the displays are rotated. The first display
+   * (0) is the one closest to the Arduino. rotation can be:
+   *   0: no rotation
+   *   1: 90 degrees clockwise
+   *   2: 180 degrees
+   *   3: 90 degrees counter clockwise
+   */
+  void setRotation(byte display, byte rotation);
 
-	/*
-	 * Implementation of Adafruit's setRotation(). Probably, you don't
-	 * need this function as you can achieve the same result by using
-	 * the previous two functions.
-	 */
-	void setRotation(byte rotation);
+  /*
+   * Implementation of Adafruit's setRotation(). Probably, you don't
+   * need this function as you can achieve the same result by using
+   * the previous two functions.
+   */
+  void setRotation(byte rotation);
 
   /*
    * Draw a pixel on your canvas. Note that for performance reasons,
@@ -117,13 +117,13 @@ public:
    */
   void write();
 
-  
+  void initDisplay();
 
 private:
   byte SPI_CS; /* SPI chip selection */
 
   /* Send out a single command to the device */
-  void spiTransfer(byte opcode, byte data=0);
+  void spiTransfer(byte opcode, byte data = 0);
 
   /* We keep track of the led-status for 8 devices in this array */
   byte *bitmap;
@@ -133,12 +133,7 @@ private:
   byte *matrixPosition;
   byte *matrixRotation;
 
-  SPIClass* spi;
-
-  void initDisplay();
+  SPIClass *spi;
 };
 
-#endif	// Max72xxPanel_h
-
-
-
+#endif // Max72xxPanel_h
